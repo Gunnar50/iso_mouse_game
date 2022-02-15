@@ -70,7 +70,7 @@ class MouseSelection:
         self.selectedWorld_x, self.selectedWorld_y = self.game.to_screen(self.selected_x, self.selected_y)
 
     def draw(self):
-        self.game.screen.blit(self.image, (self.selectedWorld_x-self.sx, self.selectedWorld_y-self.sy))
+        self.game.screen.blit(self.image, (self.selectedWorld_x, self.selectedWorld_y))
 
 
 class SpriteSheet:
