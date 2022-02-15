@@ -8,9 +8,6 @@ class Player:
         self.x, self.y = self.game.to_screen(x, y)
         self.vx, self.vy = 0, 0
 
-    # def draw(self):
-    #     self.game.screen.blit(self.image, (self.x - self.game.scroll_x, self.y - self.game.scroll_y))
-
     def update(self):
         self.get_keys()
         self.x += self.vx * self.game.dt
@@ -19,6 +16,7 @@ class Player:
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pygame.key.get_pressed()
+        mx, my = pygame.mouse.get_pos()
         if keys[pygame.K_w]:
             self.vy = -PLAYER_SPEED
         if keys[pygame.K_s]:
@@ -30,11 +28,6 @@ class Player:
         if self.vx != 0 and self.vy != 0:
             self.vx *= 1.0
             self.vy *= 0.50
-
-    def collision(self, group_list):
-        for item in group_list:
-            if item.x < self.x < item.x + TILE_X and item.y < self.y < item.y + TILE_Y:
-                self.vx, self.vy = 0, 0
 
 
 class MouseSelection:
@@ -50,7 +43,7 @@ class MouseSelection:
         self.offset_x, self.offset_y = self.mouse_x % TILE_X, self.mouse_y % TILE_Y
 
         # get the cell number
-        self.cell_x, self.cell_y = self.mouse_x // TILE_X, self.mouse_y // TILE_Y
+        self.cell_x, self.cell_y = (self.mouse_x // TILE_X), (self.mouse_y // TILE_Y)
 
         # get the selected cell
         self.selected_x = (self.cell_y - ORIGIN_Y) + (self.cell_x - ORIGIN_X)
@@ -70,7 +63,41 @@ class MouseSelection:
         self.selectedWorld_x, self.selectedWorld_y = self.game.to_screen(self.selected_x, self.selected_y)
 
     def draw(self):
-        self.game.screen.blit(self.image, (self.selectedWorld_x, self.selectedWorld_y))
+        self.game.screen.blit(self.image, (self.selectedWorld_x,
+                                           self.selectedWorld_y))
+
+
+class Camera:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.scroll = pygame.Vector2(0, 0)
+        self.dx = 0
+        self.dy = 0
+        self.speed = 25
+
+    def update(self):
+        mouse_pos = pygame.mouse.get_pos()
+
+        # x movement
+        if mouse_pos[0] > self.width * 0.97:
+            self.dx = -self.speed
+        elif mouse_pos[0] < self.width * 0.03:
+            self.dx = self.speed
+        else:
+            self.dx = 0
+
+        # y movement
+        if mouse_pos[1] > self.height * 0.97:
+            self.dy = -self.speed
+        elif mouse_pos[1] < self.height * 0.03:
+            self.dy = self.speed
+        else:
+            self.dy = 0
+
+        # update camera scroll
+        self.scroll.x += self.dx
+        self.scroll.y += self.dy
 
 
 class SpriteSheet:
@@ -93,38 +120,4 @@ class SpriteSheet:
                 self.frames.append(image)
         return self.frames
 
-
-class Tree:
-    def __init__(self, game, x, y):
-        self.game = game
-        self.top_tree = self.game.tiles[4].convert()
-        # self.bottom_tree = self.game.tiles[8]
-        self.x, self.y = self.game.to_screen(x, y)
-
-    def draw(self):
-        self.game.screen.blit(self.top_tree, (self.x - self.game.scroll_x, self.y - TILE_Y - self.game.scroll_y))
-        #self.game.screen.blit(self.bottom_tree, (self.x, self.y))
-
-
-class Floor:
-    def __init__(self, game, x, y):
-        self.game = game
-        self.floor = self.game.tiles[2].convert()
-        self.x, self.y = self.game.to_screen(x, y)
-
-    def draw(self):
-        self.game.screen.blit(self.floor, (self.x - self.game.scroll_x, self.y - TILE_Y - self.game.scroll_y))
-
-
-class Map:
-    def __init__(self, filename):
-        self.data = []
-        with open(filename, "rt") as f:
-            for line in f:
-                self.data.append(line.strip())
-
-        self.tilewidth = len(self.data[0])
-        self.tileheight = len(self.data)
-        self.width = self.tilewidth * TILE_X
-        self.height = self.tileheight * TILE_Y
 
