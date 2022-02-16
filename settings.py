@@ -34,3 +34,12 @@ def debug(info, y, x=10):
     debug_surface = font.render(str(info), True, WHITE)
     debug_rect = debug_surface.get_rect(topleft=(x, y))
     display_surface.blit(debug_surface, debug_rect)
+
+
+def get_info(info_list):
+    display_surface = pygame.display.get_surface()
+    for i, key in enumerate(info_list):
+        text = font.render(str(key) + " : " + str(info_list[key]), True, (255, 255, 255), (0, 0, 0))
+        text_rect = text.get_rect()
+        text_rect.y = 20 * i
+        display_surface.blit(text, text_rect)
