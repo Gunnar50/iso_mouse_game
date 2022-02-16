@@ -26,7 +26,6 @@ class Game:
         self.tiles = self.sprite_sheet.get_image()
         self.mouse_selection = MouseSelection(self, self.tile_selected)
         self.player = Player(self, 1, 1)
-        self.camera = Camera()
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -46,13 +45,14 @@ class Game:
         self.player.update()
         self.mouse_selection.update()
         self.mx, self.my = pygame.mouse.get_pos()
+
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
         if self.player.x - self.scroll_x != WIDTH/2:
             self.scroll_x += (self.player.x - (self.scroll_x + WIDTH/2))/10
         if self.player.y - self.scroll_y != HEIGHT/2:
             self.scroll_y += (self.player.y - (self.scroll_y + HEIGHT/2))/10
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
-        self.camera.update()
+
         self.debug_info()
 
     def to_screen(self, x, y):
@@ -70,7 +70,6 @@ class Game:
                 # Grass
                 elif self.index == 1:
                     self.screen.blit(self.tiles[2], (vWorld_x-self.scroll_x, vWorld_y-self.scroll_y))
-                    #self.screen.blit(self.tiles[2], (vWorld_x + self.camera.scroll.x, vWorld_y + self.camera.scroll.y))
 
     def draw(self):
         self.screen.fill(BGCOLOUR)
@@ -101,7 +100,6 @@ class Game:
                     pass
 
 
-# create the game object
 game = Game()
 while True:
     game.new()
