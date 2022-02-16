@@ -26,7 +26,7 @@ class Game:
         self.tiles = self.sprite_sheet.get_image()
         self.mouse_selection = MouseSelection(self, self.tile_selected)
         self.player = Player(self, 1, 1)
-        self.camera = Camera(WIDTH, HEIGHT)
+        self.camera = Camera()
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -77,14 +77,7 @@ class Game:
         self.draw_world()
         self.mouse_selection.draw()
 
-        # debug
-        # debug(f"FPS     {round(self.clock.get_fps())}", 10)
-        # debug(f"Cell         {self.mouse_selection.cell_x, self.mouse_selection.cell_y}", 40)
-        # debug(f"Selected {int(self.mouse_selection.selected_x), int(self.mouse_selection.selected_y)}", 70)
-        # debug(f"Scroll      {int(self.scroll_x), int(self.scroll_y)}", 100)
-        # debug(f"Mouse      {int(self.mx), int(self.my)}", 130)
         get_info(self.debug)
-
         pygame.display.flip()
 
     def debug_info(self):
@@ -93,6 +86,7 @@ class Game:
         self.debug["Selected"] = int(self.mouse_selection.selected_x), int(self.mouse_selection.selected_y)
         self.debug["Scroll"] = int(self.scroll_x), int(self.scroll_y)
         self.debug["Mouse"] = int(self.mx), int(self.my)
+        self.debug["Mouse_offset"] = int(self.mouse_selection.offset_x), int(self.mouse_selection.offset_y)
 
     def events(self):
         # catch all events here

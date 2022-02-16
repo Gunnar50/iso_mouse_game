@@ -29,13 +29,6 @@ font = pygame.font.Font(None, 25)
 PLAYER_SPEED = 300
 
 
-def debug(info, y, x=10):
-    display_surface = pygame.display.get_surface()
-    debug_surface = font.render(str(info), True, WHITE)
-    debug_rect = debug_surface.get_rect(topleft=(x, y))
-    display_surface.blit(debug_surface, debug_rect)
-
-
 def get_info(info_list):
     display_surface = pygame.display.get_surface()
     for i, key in enumerate(info_list):
