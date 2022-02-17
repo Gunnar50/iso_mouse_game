@@ -176,12 +176,34 @@ class Game:
         self.mouse_selection.update()
         self.mx, self.my = pygame.mouse.get_pos()
 
-        # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
+        # -------------------------------------------------- KEYBOARD SCROLLING ----------------------------------------#
         if self.player.x - self.scroll_x != WIDTH / 2:
             self.scroll_x += (self.player.x - (self.scroll_x + WIDTH / 2)) / 10
         if self.player.y - self.scroll_y != HEIGHT / 2:
             self.scroll_y += (self.player.y - (self.scroll_y + HEIGHT / 2)) / 10
-        # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
+        # --------------------------------------------------------------------------------------------------------------#
+
+        #----------------------------------------------------MOUSE SCROLLING--------------------------------------------#
+        #if the mouse is close to the edge of the resolution, add/decrease scroll#
+        if self.mx > 880:
+            scroll_amountX = 5
+        elif self.mx < 150:
+            scroll_amountX = -5
+        else:
+            scroll_amountX = 0
+
+        if self.my < 125:
+            scroll_amountY = -4
+        elif self.my > 620:
+            scroll_amountY = 4
+        else:
+            scroll_amountY = 0
+
+        self.scroll_x += scroll_amountX
+        self.player.x += scroll_amountX
+        self.scroll_y += scroll_amountY
+        self.player.y += scroll_amountY
+        #---------------------------------------------------------------------------------------------------------------#
 
         self.debug_info()
 
