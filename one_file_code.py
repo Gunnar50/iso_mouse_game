@@ -89,6 +89,9 @@ class MouseSelection:
 
         # get the cell number
         self.cell_x, self.cell_y = (self.mouse_x // TILE_X), (self.mouse_y // TILE_Y)
+        self.cell_x += (self.game.scroll_x//TILE_X)+0.5
+        self.cell_y += (self.game.scroll_y//TILE_Y)+0.5
+
 
         # get the selected cell in iso grid
         self.selected_x = (self.cell_y - ORIGIN_Y) + (self.cell_x - ORIGIN_X)
@@ -109,7 +112,7 @@ class MouseSelection:
         self.selectedWorld_x, self.selectedWorld_y = self.game.to_screen(self.selected_x, self.selected_y)
 
     def draw(self):
-        self.game.screen.blit(self.image, (self.selectedWorld_x, self.selectedWorld_y))
+        self.game.screen.blit(self.image, (self.selectedWorld_x-self.game.scroll_x, self.selectedWorld_y-self.game.scroll_y))
 
 
 class SpriteSheet:
