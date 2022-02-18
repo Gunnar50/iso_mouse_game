@@ -41,9 +41,13 @@ class MouseSelection:
 
         # get the mouse offset position inside the tile
         self.offset_x, self.offset_y = self.mouse_x % TILE_X, self.mouse_y % TILE_Y
+        self.offset_x += self.game.scroll_x % TILE_X
+        self.offset_y += self.game.scroll_y % TILE_Y
 
         # get the cell number
         self.cell_x, self.cell_y = (self.mouse_x // TILE_X), (self.mouse_y // TILE_Y)
+        self.cell_x += int((self.game.scroll_x//TILE_X))
+        self.cell_y += int((self.game.scroll_y//TILE_Y))
 
         # get the selected cell in iso grid
         self.selected_x = (self.cell_y - ORIGIN_Y) + (self.cell_x - ORIGIN_X)
@@ -61,16 +65,19 @@ class MouseSelection:
             self.selected_x += 1
 
         # translate the selected cell to world coordinate
-        self.selectedWorld_x, self.selectedWorld_y = self.game.to_screen(self.selected_x, self.selected_y)
+        self.selectedWorld_x, self.selectedWorld_y = self.game.to_screen(self.selected_x,
+                                                                         self.selected_y)
 
     def draw(self):
-        self.game.screen.blit(self.image, (self.selectedWorld_x, self.selectedWorld_y))
+        self.game.screen.blit(self.image, (self.selectedWorld_x-self.game.scroll_x,
+                                           self.selectedWorld_y-self.game.scroll_y))
 
 
 class SpriteSheet:
-    def __init__(self, image):
+    def __init__(self, image, game):
         self.image = image
         self.frames = []
+        self.game = game
 
     def get_image(self):
         for row in range(2):

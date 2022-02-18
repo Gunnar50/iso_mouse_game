@@ -17,15 +17,17 @@ class Game:
         self.debug = {}
         self.sprite_sheet_image = pygame.image.load("isometric_whitebg.png")
         self.index = 1
+        self.mouse_held = False
         self.scroll_x, self.scroll_y = 0, 0
+        self.start_pan_x, self.start_pan_y = 0, 0
 
     def new(self):
         # initialize all variables and do all the setup for a new game
-        self.sprite_sheet = SpriteSheet(self.sprite_sheet_image)
+        self.sprite_sheet = SpriteSheet(self.sprite_sheet_image, self)
         self.tile_selected = self.sprite_sheet.get_image()[0]
         self.tiles = self.sprite_sheet.get_image()
         self.mouse_selection = MouseSelection(self, self.tile_selected)
-        self.player = Player(self, 1, 1)
+        self.player = Player(self, 9, 7)
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -45,11 +47,18 @@ class Game:
         self.player.update()
         self.mouse_selection.update()
         self.mx, self.my = pygame.mouse.get_pos()
+        # if self.mouse_held:
+        #     self.scroll_x -= self.mx - self.start_pan_x
+        #     self.scroll_y -= self.my - self.start_pan_y
+        #     self.start_pan_x = self.mx
+        #     self.start_pan_y = self.my
 
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
         if self.player.x - self.scroll_x != WIDTH/2:
             self.scroll_x += (self.player.x - (self.scroll_x + WIDTH/2))/10
+            self.mx += self.scroll_x
         if self.player.y - self.scroll_y != HEIGHT/2:
+            self.my += self.scroll_y
             self.scroll_y += (self.player.y - (self.scroll_y + HEIGHT/2))/10
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
 
@@ -61,6 +70,7 @@ class Game:
         return screen_x, screen_y
 
     def draw_world(self):
+
         for y in range(WORLD_Y):
             for x in range(WORLD_X):
                 vWorld_x, vWorld_y = self.to_screen(x, y)
@@ -98,6 +108,16 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pass
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3:
+                    self.start_pan_x = self.mx
+                    self.start_pan_y = self.my
+                    self.mouse_held = True
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 3:
+                    self.mouse_held = False
 
 
 game = Game()
