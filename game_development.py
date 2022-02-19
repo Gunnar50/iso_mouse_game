@@ -15,7 +15,8 @@ class Game:
         self.clock = pygame.time.Clock()
         pygame.key.set_repeat(400, 100)
         self.debug = {}
-        self.sprite_sheet_image = pygame.image.load("isometric_whitebg.png")
+        self.mx, self.my = pygame.mouse.get_pos()
+        self.sprite_sheet_image = pygame.image.load("isometric_whitebg - Copy.png").convert_alpha()
         self.index = 1
         self.mouse_held = False
         self.scroll_x, self.scroll_y = 0, 0
@@ -28,6 +29,7 @@ class Game:
         self.tiles = self.sprite_sheet.get_image()
         self.mouse_selection = MouseSelection(self, self.tile_selected)
         self.player = Player(self, 9, 7)
+        self.trees = []
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -47,11 +49,11 @@ class Game:
         self.player.update()
         self.mouse_selection.update()
         self.mx, self.my = pygame.mouse.get_pos()
-        # if self.mouse_held:
-        #     self.scroll_x -= self.mx - self.start_pan_x
-        #     self.scroll_y -= self.my - self.start_pan_y
-        #     self.start_pan_x = self.mx
-        #     self.start_pan_y = self.my
+        if self.mouse_held:
+            self.scroll_x -= self.mx - self.start_pan_x
+            self.scroll_y -= self.my - self.start_pan_y
+            self.start_pan_x = self.mx
+            self.start_pan_y = self.my
 
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
         if self.player.x - self.scroll_x != WIDTH/2:
@@ -70,7 +72,6 @@ class Game:
         return screen_x, screen_y
 
     def draw_world(self):
-
         for y in range(WORLD_Y):
             for x in range(WORLD_X):
                 vWorld_x, vWorld_y = self.to_screen(x, y)
@@ -86,6 +87,8 @@ class Game:
         self.draw_world()
         self.mouse_selection.draw()
 
+        for tree in self.trees:
+            self.screen.blit(self.tiles[4], (tree[0]-self.scroll_x, tree[1]-self.scroll_y))
         get_info(self.debug)
         pygame.display.flip()
 
@@ -96,6 +99,11 @@ class Game:
         self.debug["Scroll"] = int(self.scroll_x), int(self.scroll_y)
         self.debug["Mouse"] = int(self.mx), int(self.my)
         self.debug["Mouse_offset"] = int(self.mouse_selection.offset_x), int(self.mouse_selection.offset_y)
+        self.debug["ScrollVSMouse"] = int(self.mx-self.scroll_x), \
+                                      int(self.my-self.scroll_y)
+
+        # self.debug["Color"] = self.screen.get_at((self.mx, self.my))
+
 
     def events(self):
         # catch all events here
@@ -107,9 +115,10 @@ class Game:
                     self.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    pass
+                    self.clicked_x, self.clicked_y = self.to_screen(self.mouse_selection.selected_x,
+                                                                    self.mouse_selection.selected_y)
+                    self.trees.append((self.clicked_x, self.clicked_y))
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
                     self.start_pan_x = self.mx
                     self.start_pan_y = self.my

@@ -49,9 +49,12 @@ class MouseSelection:
         self.cell_x += int((self.game.scroll_x//TILE_X))
         self.cell_y += int((self.game.scroll_y//TILE_Y))
 
+
+
         # get the selected cell in iso grid
         self.selected_x = (self.cell_y - ORIGIN_Y) + (self.cell_x - ORIGIN_X)
         self.selected_y = (self.cell_y - ORIGIN_Y) - (self.cell_x - ORIGIN_X)
+
 
         # height and width of a quarter of a tile, select the corner of the tile to nodge to a direction
         h, w = TILE_Y/2, TILE_X/2
@@ -63,6 +66,16 @@ class MouseSelection:
             self.selected_y -= 1
         if self.offset_y > (h / w) * (2 * w - self.offset_x) + h:
             self.selected_x += 1
+
+        # colour = self.game.screen.get_at((self.mouse_x, self.mouse_y))
+        # if colour == RED:
+        #     self.selected_x -= 1
+        # if colour == BLUE:
+        #     self.selected_y -= 1
+        # if colour == GREEN:
+        #     self.selected_y += 1
+        # if colour == YELLOW:
+        #     self.selected_x += 1
 
         # translate the selected cell to world coordinate
         self.selectedWorld_x, self.selectedWorld_y = self.game.to_screen(self.selected_x,
