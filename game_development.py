@@ -28,7 +28,7 @@ class Game:
         self.tile_selected = self.sprite_sheet.get_image()[0]
         self.tiles = self.sprite_sheet.get_image()
         self.mouse_selection = MouseSelection(self, self.tile_selected)
-        self.player = Player(self, 9, 7)
+        self.player = Player(self, (WIDTH/2)/TILE_X, (HEIGHT/2)/TILE_Y)
         self.trees = []
 
     def run(self):
@@ -71,6 +71,29 @@ class Game:
         screen_y = (ORIGIN_Y * TILE_Y) + (x + y) * (TILE_Y / 2)
         return screen_x, screen_y
 
+    def from_screen(self, screen_x, screen_y):
+        ix = (screen_x - (ORIGIN_X * TILE_X)) / TILE_X
+        iy = (screen_y - (ORIGIN_Y * TILE_Y)) / TILE_Y
+        x = ix + iy
+        y = iy - ix
+        return x, y
+
+    def draw_isogrid(self):
+        for row in range(0, WIDTH, TILE_X):
+            pygame.draw.line(self.screen, LIGHTGREY, (row-self.scroll_x, 0), (row-self.scroll_x, HEIGHT))
+        for col in range(0, HEIGHT, TILE_Y):
+            pygame.draw.line(self.screen, LIGHTGREY, (0, col-self.scroll_y), (WIDTH, col-self.scroll_y))
+
+        # start_x = 440
+        # start_y = 40
+        # for x, y in zip(range(start_x, WORLD_X * TILE_X, TILE_X // 2), range(start_y, WORLD_Y * TILE_Y, TILE_Y // 2)):
+        #     pygame.draw.line(self.screen, RED, (x - self.scroll_x, y - self.scroll_y),
+        #                      (x - WIDTH - self.scroll_x, y + WIDTH / 2 - self.scroll_y))
+        #
+        # for x, y in zip(range(start_x, -WIDTH, -TILE_X // 2), range(start_y, WIDTH, TILE_Y // 2)):
+        #     pygame.draw.line(self.screen, RED, (x - self.scroll_x, y - self.scroll_y),
+        #                      (x + WIDTH - self.scroll_x, y + WIDTH / 2 - self.scroll_y))
+
     def draw_world(self):
         for y in range(WORLD_Y):
             for x in range(WORLD_X):
@@ -85,6 +108,7 @@ class Game:
     def draw(self):
         self.screen.fill(BGCOLOUR)
         self.draw_world()
+        self.draw_isogrid()
         self.mouse_selection.draw()
 
         for tree in self.trees:
@@ -93,14 +117,14 @@ class Game:
         pygame.display.flip()
 
     def debug_info(self):
+        mx, my = self.from_screen(self.mx, self.my)
         self.debug["FPS"] = int(self.clock.get_fps())
         self.debug["Cell"] = self.mouse_selection.cell_x, self.mouse_selection.cell_y
         self.debug["Selected"] = int(self.mouse_selection.selected_x), int(self.mouse_selection.selected_y)
         self.debug["Scroll"] = int(self.scroll_x), int(self.scroll_y)
         self.debug["Mouse"] = int(self.mx), int(self.my)
         self.debug["Mouse_offset"] = int(self.mouse_selection.offset_x), int(self.mouse_selection.offset_y)
-        self.debug["ScrollVSMouse"] = int(self.mx-self.scroll_x), \
-                                      int(self.my-self.scroll_y)
+        self.debug["MouseIso"] = int(mx), int(my)
 
         # self.debug["Color"] = self.screen.get_at((self.mx, self.my))
 

@@ -46,18 +46,15 @@ class MouseSelection:
 
         # get the cell number
         self.cell_x, self.cell_y = (self.mouse_x // TILE_X), (self.mouse_y // TILE_Y)
-        self.cell_x += int((self.game.scroll_x//TILE_X))
-        self.cell_y += int((self.game.scroll_y//TILE_Y))
-
-
+        self.cell_x += int((self.game.scroll_x // TILE_X))
+        self.cell_y += int((self.game.scroll_y // TILE_Y))
 
         # get the selected cell in iso grid
         self.selected_x = (self.cell_y - ORIGIN_Y) + (self.cell_x - ORIGIN_X)
         self.selected_y = (self.cell_y - ORIGIN_Y) - (self.cell_x - ORIGIN_X)
 
-
         # height and width of a quarter of a tile, select the corner of the tile to nodge to a direction
-        h, w = TILE_Y/2, TILE_X/2
+        h, w = TILE_Y / 2, TILE_X / 2
         if self.offset_y < (h / w) * (w - self.offset_x):
             self.selected_x -= 1
         if self.offset_y > (h / w) * self.offset_x + h:
@@ -82,8 +79,8 @@ class MouseSelection:
                                                                          self.selected_y)
 
     def draw(self):
-        self.game.screen.blit(self.image, (self.selectedWorld_x-self.game.scroll_x,
-                                           self.selectedWorld_y-self.game.scroll_y))
+        self.game.screen.blit(self.image, (self.selectedWorld_x - self.game.scroll_x,
+                                           self.selectedWorld_y - self.game.scroll_y))
 
 
 class SpriteSheet:
@@ -101,10 +98,8 @@ class SpriteSheet:
                     image = pygame.transform.scale(image, (TILE_X, TILE_Y))
                 else:
                     image = pygame.Surface((TILE_Y, TILE_Y)).convert_alpha()
-                    image.blit(self.image, (0, 0), (col * TILE_X/2, row * TILE_Y/2, TILE_X, TILE_Y*2))
-                    image = pygame.transform.scale(image, (TILE_X, TILE_Y*2))
+                    image.blit(self.image, (0, 0), (col * TILE_X / 2, row * TILE_Y / 2, TILE_X, TILE_Y * 2))
+                    image = pygame.transform.scale(image, (TILE_X, TILE_Y * 2))
                 image.set_colorkey(WHITE)
                 self.frames.append(image)
         return self.frames
-
-

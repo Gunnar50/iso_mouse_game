@@ -21,7 +21,7 @@ YELLOW = (255, 255, 0)
 WIDTH = 1024
 HEIGHT = 768
 FPS = 60
-title = "Tile-Based game"
+title = "Isometric-Based game"
 BGCOLOUR = DARKGREY
 
 TILE_X = 80
@@ -34,7 +34,7 @@ ORIGIN_X, ORIGIN_Y = 5, 1
 pygame.init()
 font = pygame.font.Font(None, 25)
 
-PLAYER_SPEED = 300
+CAMERA_SPEED = 300
 
 
 def get_info(info_list):
@@ -48,7 +48,7 @@ def get_info(info_list):
 
 # ------------------------- SPRITES ---------------------------- #
 
-class Player:
+class Camera:
     def __init__(self, game, x, y):
         self.game = game
         self.x, self.y = self.game.to_screen(x, y)
@@ -63,13 +63,13 @@ class Player:
         self.vx, self.vy = 0, 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            self.vy = -PLAYER_SPEED
+            self.vy = -CAMERA_SPEED
         if keys[pygame.K_s]:
-            self.vy = PLAYER_SPEED
+            self.vy = CAMERA_SPEED
         if keys[pygame.K_a]:
-            self.vx = -PLAYER_SPEED
+            self.vx = -CAMERA_SPEED
         if keys[pygame.K_d]:
-            self.vx = PLAYER_SPEED
+            self.vx = CAMERA_SPEED
         if self.vx != 0 and self.vy != 0:
             self.vx *= 1.0
             self.vy *= 0.50
@@ -86,9 +86,13 @@ class MouseSelection:
 
         # get the mouse offset position inside the tile
         self.offset_x, self.offset_y = self.mouse_x % TILE_X, self.mouse_y % TILE_Y
+        self.offset_x += self.game.scroll_x % TILE_X  # Add camera scroll to offset
+        self.offset_y += self.game.scroll_y % TILE_Y
 
         # get the cell number
         self.cell_x, self.cell_y = (self.mouse_x // TILE_X), (self.mouse_y // TILE_Y)
+        self.cell_x += int((self.game.scroll_x // TILE_X))  # Add camera scroll to cell
+        self.cell_y += int((self.game.scroll_y // TILE_Y))
 
         # get the selected cell in iso grid
         self.selected_x = (self.cell_y - ORIGIN_Y) + (self.cell_x - ORIGIN_X)
@@ -109,7 +113,9 @@ class MouseSelection:
         self.selectedWorld_x, self.selectedWorld_y = self.game.to_screen(self.selected_x, self.selected_y)
 
     def draw(self):
-        self.game.screen.blit(self.image, (self.selectedWorld_x, self.selectedWorld_y))
+        # Draw the selected tile with the camera scroll offset
+        self.game.screen.blit(self.image, (self.selectedWorld_x - self.game.scroll_x,
+                                           self.selectedWorld_y - self.game.scroll_y))
 
 
 class SpriteSheet:
@@ -142,7 +148,7 @@ class Game:
         self.clock = pygame.time.Clock()
         pygame.key.set_repeat(400, 100)
         self.debug = {}
-        self.sprite_sheet_image = pygame.image.load("isometric_whitebg.png")
+        self.sprite_sheet_image = pygame.image.load("isometric_whitebg - Copy.png")
         self.index = 1
         self.scroll_x, self.scroll_y = 0, 0
 
@@ -152,7 +158,7 @@ class Game:
         self.tile_selected = self.sprite_sheet.get_image()[0]
         self.tiles = self.sprite_sheet.get_image()
         self.mouse_selection = MouseSelection(self, self.tile_selected)
-        self.player = Player(self, 1, 1)
+        self.camera = Camera(self, 1, 1)
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -169,15 +175,15 @@ class Game:
 
     def update(self):
         # update portion of the game loop
-        self.player.update()
+        self.camera.update()
         self.mouse_selection.update()
         self.mx, self.my = pygame.mouse.get_pos()
 
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
-        if self.player.x - self.scroll_x != WIDTH / 2:
-            self.scroll_x += (self.player.x - (self.scroll_x + WIDTH / 2)) / 10
-        if self.player.y - self.scroll_y != HEIGHT / 2:
-            self.scroll_y += (self.player.y - (self.scroll_y + HEIGHT / 2)) / 10
+        if self.camera.x - self.scroll_x != WIDTH / 2:
+            self.scroll_x += (self.camera.x - (self.scroll_x + WIDTH / 2)) / 10
+        if self.camera.y - self.scroll_y != HEIGHT / 2:
+            self.scroll_y += (self.camera.y - (self.scroll_y + HEIGHT / 2)) / 10
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
 
         self.debug_info()

@@ -36,3 +36,6 @@ def get_info(info_list):
         text_rect = text.get_rect()
         text_rect.y = 20 * i
         display_surface.blit(text, text_rect)
+
+
+
