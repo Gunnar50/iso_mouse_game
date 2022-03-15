@@ -108,7 +108,7 @@ class Game:
     def draw(self):
         self.screen.fill(BGCOLOUR)
         self.draw_world()
-        self.draw_isogrid()
+        #self.draw_isogrid()
         self.mouse_selection.draw()
 
         for tree in self.trees:
