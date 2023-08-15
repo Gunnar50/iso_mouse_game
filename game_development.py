@@ -58,10 +58,10 @@ class Game:
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
         if self.player.x - self.scroll_x != WIDTH/2:
             self.scroll_x += (self.player.x - (self.scroll_x + WIDTH/2))/10
-            self.mx += self.scroll_x
+            # self.mx += self.scroll_x
         if self.player.y - self.scroll_y != HEIGHT/2:
-            self.my += self.scroll_y
             self.scroll_y += (self.player.y - (self.scroll_y + HEIGHT/2))/10
+            # self.my += self.scroll_y
         # -------------------------------------------------- CAMERA SCROLLING ----------------------------------------#
 
         self.debug_info()
@@ -82,17 +82,17 @@ class Game:
         for row in range(0, WIDTH, TILE_X):
             pygame.draw.line(self.screen, LIGHTGREY, (row-self.scroll_x, 0), (row-self.scroll_x, HEIGHT))
         for col in range(0, HEIGHT, TILE_Y):
-            pygame.draw.line(self.screen, LIGHTGREY, (0, col-self.scroll_y), (WIDTH, col-self.scroll_y))
+            pygame.draw.line(self.screen, LIGHTGREY, (0, col-self.scroll_y-TILE_Y//2), (WIDTH, col-self.scroll_y-TILE_Y//2))
 
-        # start_x = 440
-        # start_y = 40
-        # for x, y in zip(range(start_x, WORLD_X * TILE_X, TILE_X // 2), range(start_y, WORLD_Y * TILE_Y, TILE_Y // 2)):
-        #     pygame.draw.line(self.screen, RED, (x - self.scroll_x, y - self.scroll_y),
-        #                      (x - WIDTH - self.scroll_x, y + WIDTH / 2 - self.scroll_y))
-        #
-        # for x, y in zip(range(start_x, -WIDTH, -TILE_X // 2), range(start_y, WIDTH, TILE_Y // 2)):
-        #     pygame.draw.line(self.screen, RED, (x - self.scroll_x, y - self.scroll_y),
-        #                      (x + WIDTH - self.scroll_x, y + WIDTH / 2 - self.scroll_y))
+        start_x = 440
+        start_y = 40
+        for x, y in zip(range(start_x, WORLD_X * TILE_X, TILE_X // 2), range(start_y, WORLD_Y * TILE_Y, TILE_Y // 2)):
+            pygame.draw.line(self.screen, RED, (x - self.scroll_x, y - self.scroll_y),
+                             (x - WIDTH - self.scroll_x, y + WIDTH / 2 - self.scroll_y))
+
+        for x, y in zip(range(start_x, -WIDTH, -TILE_X // 2), range(start_y, WIDTH, TILE_Y // 2)):
+            pygame.draw.line(self.screen, RED, (x - self.scroll_x, y - self.scroll_y),
+                             (x + WIDTH - self.scroll_x, y + WIDTH / 2 - self.scroll_y))
 
     def draw_world(self):
         for y in range(WORLD_Y):
@@ -108,7 +108,7 @@ class Game:
     def draw(self):
         self.screen.fill(BGCOLOUR)
         self.draw_world()
-        #self.draw_isogrid()
+        self.draw_isogrid()
         self.mouse_selection.draw()
 
         for tree in self.trees:
@@ -141,7 +141,9 @@ class Game:
                 if event.button == 1:
                     self.clicked_x, self.clicked_y = self.to_screen(self.mouse_selection.selected_x,
                                                                     self.mouse_selection.selected_y)
-                    self.trees.append((self.clicked_x, self.clicked_y))
+                    self.trees.append((self.clicked_x, self.clicked_y-TILE_Y))
+                    self.trees.sort()
+                    print(self.trees)
 
                 if event.button == 3:
                     self.start_pan_x = self.mx
